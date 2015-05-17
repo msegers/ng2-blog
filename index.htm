@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>One guy and a cat</title>
+        <link rel="stylesheet" href="layout/style.css" />
+        <script src="https://github.jspm.io/jmcriffey/bower-traceur-runtime@0.0.87/traceur-runtime.js"></script>
+        <script src="https://jspm.io/system@0.16.js"></script>
+        <script src="https://code.angularjs.org/2.0.0-alpha.22/angular2.dev.js"></script>
+<!--        <script src="https://code.angularjs.org/2.0.0-alpha.23/angular2.sfx.dev.js"></script>-->
+    </head>
+    <body>
+        <header>
+            <nav>
+                <ul>
+                    <li class="active">
+                        <a router-link="blog">Blog</a>
+                    </li>
+                    <li>
+                        <a router-link="work-and-projects">Work and projects</a>
+                    </li>
+                    <li>
+                        <a router-link="mathijs">Mathijs</a>
+                    </li>
+                    <li>
+                        <a router-link="contact">Contact</a>
+                    </li>
+                </ul>
+            </nav>
+            <section class="nav-footer">
+                <img class="logo" src="img/logo.png" alt="The logo of Oneguyandacat.com" />
+            </section>
+        </header><main>
+        <main></main>
+        </main>
+        <footer>
+            
+        </footer>
+        <script>
+            System.import('modules/blog/blog');
+            System.import('modules/contact/contact');
+        </script>
+    </body>
+</html>
