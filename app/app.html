@@ -1,8 +1,25 @@
-<section class="sample-app-content">
-  <nav>
-    <a router-link="home">Home</a>
-    <a router-link="about">About</a>
-  </nav>
-
-  <router-outlet></router-outlet>
-</section>
+<header>
+    <nav>
+        <ul>
+            <li>
+                <a router-link="blog">Blog</a>
+            </li>
+            <li>
+                <a router-link="work-and-projects">Work and projects</a>
+            </li>
+            <li>
+                <a router-link="mathijs">Mathijs</a>
+            </li>
+            <li>
+                <a router-link="contact">Contact</a>
+            </li>
+        </ul>
+    </nav>
+    <section class="nav-footer">
+        <img class="logo" src="img/logo.png" alt="The logo of Oneguyandacat.com" />
+    </section>
+</header>
+<main>
+    <router-outlet></router-outlet>
+</main>
+</footer>

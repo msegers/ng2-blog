@@ -4,13 +4,17 @@ import {RouteConfig, RouterOutlet, RouterLink, routerInjectables} from 'angular2
 
 import {Home} from './components/home/home';
 import {About} from './components/about/about';
+import {Blog} from './components/blog/blog';
+import {Contact} from './components/contact/contact';
 
 @Component({
   selector: 'app'
 })
 @RouteConfig([
-  { path: '/', component: Home, as: 'home' },
-  { path: '/about', component: About, as: 'about' }
+    { path: '/', component: Blog, as: 'blog' },
+    { path: '/work-and-projects', component: Blog, as: 'work-and-projects' },
+    { path: '/mathijs', component: About, as: 'mathijs' },
+    { path: '/contact', component: Contact, as: 'contact' }
 ])
 @View({
   templateUrl: './app.html',
