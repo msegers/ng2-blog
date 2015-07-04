@@ -501,11 +501,7 @@ declare module "angular2/angular2" {
    *
    */
   function View(arg: _ViewArg): (target: any) => any;
-<<<<<<< HEAD
 
-=======
-  
->>>>>>> 6b9a15a7808d68c913155c9af7fff9f07ced30c2
   /**
    * The `For` directive instantiates a template once per item from an iterable. The context for each
    * instantiated template inherits from the outer context with the given loop variable set to the
@@ -548,11 +544,7 @@ declare module "angular2/angular2" {
    * # Example:
    *
    * ```
-<<<<<<< HEAD
-   * <div *ng-if="errorCount > 0" class="error">
-=======
    * <div *if="errorCount > 0" class="error">
->>>>>>> 6b9a15a7808d68c913155c9af7fff9f07ced30c2
    *   <!-- Error message displayed when the errorCount property on the current context is greater than 0. -->
    *   {{errorCount}} errors detected
    * </div>
@@ -774,4 +766,13 @@ declare module "angular2/router" {
   var routerInjectables: any;
   var RouteConfigAnnotation: any;
   var RouteConfig: any;
+}
+
+declare module "angular2/forms" {
+   class FormBuilder{};
+   function formDirectives(){};
+    class ControlGroup{};
+    var materialDesign: any;
+    var forms: any;
+    var required: any;
 }

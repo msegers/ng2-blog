@@ -134,7 +134,7 @@ gulp.task('build.js.dev', function () {
 });
 
 gulp.task('build.assets.dev', ['build.js.dev'], function () {
-  return gulp.src(['./app/**/*.html', './app/**/*.css'])
+  return gulp.src(['./app/**/*.html', './app/**/*.css', './app/**/*.jpg', './app/**/*.png'])
     .pipe(gulp.dest(PATH.dest.dev.all));
 });
 
@@ -205,7 +205,7 @@ gulp.task('build.init.prod', function() {
 });
 
 gulp.task('build.assets.prod', ['build.js.prod'], function () {
-  return gulp.src(['./app/**/*.html', './app/**/*.css'])
+  return gulp.src(['./app/**/*.html', './app/**/*.css', './app/**/*.jpg', './app/**/*.png'])
     .pipe(gulp.dest(PATH.dest.prod.all));
 });
 
