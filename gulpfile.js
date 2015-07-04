@@ -1,27 +1,35 @@
 'use strict';
 
 var gulp = require('gulp');
+var bump = require('gulp-bump');
 var concat = require('gulp-concat');
 var filter = require('gulp-filter');
 var inject = require('gulp-inject');
+var minifyCSS = require('gulp-minify-css');
+var minifyHTML = require('gulp-minify-html');
 var plumber = require('gulp-plumber');
 var sourcemaps = require('gulp-sourcemaps');
+var template = require('gulp-template');
+var tsc = require('gulp-typescript');
 var uglify = require('gulp-uglify');
+var watch = require('gulp-watch');
 
-var del = require('del');
 var Builder = require('systemjs-builder');
-var ts = require('gulp-typescript');
+var del = require('del');
+var fs = require('fs');
+var join = require('path').join;
 var runSequence = require('run-sequence');
+var semver = require('semver');
 var series = require('stream-series');
 
 var http = require('http');
 var connect = require('connect');
 var serveStatic = require('serve-static');
 var openResource = require('open');
-var join = require('path').join;
 
 // --------------
 // Configuration.
+var APP_BASE = '/';
 
 var PATH = {
   dest: {
@@ -45,8 +53,7 @@ var PATH = {
       './node_modules/es6-module-loader/dist/es6-module-loader-sans-promises.js.map',
       './node_modules/reflect-metadata/Reflect.js',
       './node_modules/reflect-metadata/Reflect.js.map',
-      './node_modules/systemjs/dist/system.js',
-      './node_modules/systemjs/dist/system.js.map',
+      './node_modules/systemjs/dist/system.src.js',
       './node_modules/angular2/node_modules/zone.js/dist/zone.js'
     ]
   }
@@ -54,7 +61,7 @@ var PATH = {
 
 var ng2Builder = new Builder({
   paths: {
-    'angular2/*': 'node_modules/angular2/es6/prod/*.es6',
+    'angular2/*': 'node_modules/angular2/es6/dev/*.js',
     rx: 'node_modules/angular2/node_modules/rx/dist/rx.js'
   },
   meta: {
@@ -72,9 +79,14 @@ var appProdBuilder = new Builder({
   }
 });
 
-var tsProject = ts.createProject('tsconfig.json', {
+var HTMLMinifierOpts = { conditionals: true };
+
+var tsProject = tsc.createProject('tsconfig.json', {
   typescript: require('typescript')
 });
+
+var semverReleases = ['major', 'premajor', 'minor', 'preminor', 'patch',
+                      'prepatch', 'prerelease'];
 
 var port = 5555;
 
@@ -126,10 +138,11 @@ gulp.task('build.js.dev', function () {
   var result = gulp.src('./app/**/*ts')
     .pipe(plumber())
     .pipe(sourcemaps.init())
-    .pipe(ts(tsProject));
+    .pipe(tsc(tsProject));
 
   return result.js
     .pipe(sourcemaps.write())
+    .pipe(template(templateLocals()))
     .pipe(gulp.dest(PATH.dest.dev.all));
 });
 
@@ -139,9 +152,10 @@ gulp.task('build.assets.dev', ['build.js.dev'], function () {
 });
 
 gulp.task('build.index.dev', function() {
-  var target = gulp.src(injectableDevAssetsRef('dev'), { read: false });
+  var target = gulp.src(injectableDevAssetsRef(), { read: false });
   return gulp.src('./app/index.html')
     .pipe(inject(target, { transform: transformPath('dev') }))
+    .pipe(template(templateLocals()))
     .pipe(gulp.dest(PATH.dest.dev.all));
 });
 
@@ -150,7 +164,7 @@ gulp.task('build.app.dev', function (done) {
 });
 
 gulp.task('build.dev', function (done) {
-  runSequence('clean.dev', ['build.lib.dev', 'build.app.dev'], done);
+  runSequence('clean.dev', 'build.lib.dev', 'build.app.dev', done);
 });
 
 // --------------
@@ -169,20 +183,18 @@ gulp.task('build.lib.prod', ['build.ng2.prod'], function () {
 
   return series(lib, ng2, router)
     .pipe(jsOnly)
-    .pipe(sourcemaps.init())
     .pipe(concat('lib.js'))
     .pipe(uglify())
-    .pipe(sourcemaps.write())
     .pipe(gulp.dest(PATH.dest.prod.lib));
 });
 
 gulp.task('build.js.tmp', function () {
   var result = gulp.src(['./app/**/*ts', '!./app/init.ts'])
     .pipe(plumber())
-    .pipe(sourcemaps.init())
-    .pipe(ts(tsProject));
+    .pipe(tsc(tsProject));
 
   return result.js
+    .pipe(template({ VERSION: getVersion() }))
     .pipe(gulp.dest('tmp'));
 });
 
@@ -196,16 +208,29 @@ gulp.task('build.init.prod', function() {
   var result = gulp.src('./app/init.ts')
     .pipe(plumber())
     .pipe(sourcemaps.init())
-    .pipe(ts(tsProject));
+    .pipe(tsc(tsProject));
 
   return result.js
     .pipe(uglify())
+    .pipe(template(templateLocals()))
     .pipe(sourcemaps.write())
     .pipe(gulp.dest(PATH.dest.prod.all));
 });
 
 gulp.task('build.assets.prod', ['build.js.prod'], function () {
-  return gulp.src(['./app/**/*.html', './app/**/*.css', './app/**/*.jpg', './app/**/*.png'])
+  var filterHTML = filter('**/*.html');
+  var filterCSS = filter('**/*.css');
+  var filterJPG = filter('**/*.jpg');
+  var filterPNG = filter('**/*.png');
+  return gulp.src(['./app/**/*.html', './app/**/*.css'])
+    .pipe(filterHTML)
+    .pipe(minifyHTML(HTMLMinifierOpts))
+    .pipe(filterHTML.restore())
+    .pipe(filterCSS)
+    .pipe(filterPNG)
+    .pipe(filterJPG)
+    .pipe(minifyCSS())
+    .pipe(filterCSS.restore())
     .pipe(gulp.dest(PATH.dest.prod.all));
 });
 
@@ -214,6 +239,7 @@ gulp.task('build.index.prod', function() {
                          join(PATH.dest.prod.all, '**/*.css')], { read: false });
   return gulp.src('./app/index.html')
     .pipe(inject(target, { transform: transformPath('prod') }))
+    .pipe(template(templateLocals()))
     .pipe(gulp.dest(PATH.dest.prod.all));
 });
 
@@ -225,7 +251,18 @@ gulp.task('build.app.prod', function (done) {
 
 gulp.task('build.prod', function (done) {
   runSequence('clean.prod', 'build.lib.prod', 'clean.tmp', 'build.app.prod',
-              'clean.tmp', done);
+              done);
+});
+
+// --------------
+// Version.
+
+registerBumpTasks();
+
+gulp.task('bump.reset', function() {
+  return gulp.src('package.json')
+    .pipe(bump({ version: '0.0.0' }))
+    .pipe(gulp.dest('./'));
 });
 
 // --------------
@@ -236,10 +273,12 @@ gulp.task('build.prod', function (done) {
 // --------------
 // Serve dev.
 
-gulp.task('serve.dev', ['build.app.dev'], function () {
+gulp.task('serve.dev', ['build.dev'], function () {
   var app;
 
-  gulp.watch('./app/**', ['build.app.dev']);
+  watch('./app/**', function () {
+    gulp.start('build.app.dev');
+  });
 
   app = connect().use(serveStatic(join(__dirname, PATH.dest.dev.all)));
   http.createServer(app).listen(port, function () {
@@ -250,10 +289,12 @@ gulp.task('serve.dev', ['build.app.dev'], function () {
 // --------------
 // Serve prod.
 
-gulp.task('serve.prod', ['build.app.prod'], function () {
+gulp.task('serve.prod', ['build.prod'], function () {
   var app;
 
-  gulp.watch('./app/**', ['build.app.prod']);
+  watch('./app/**', function () {
+    gulp.start('build.app.prod');
+  });
 
   app = connect().use(serveStatic(join(__dirname, PATH.dest.prod.all)));
   http.createServer(app).listen(port, function () {
@@ -265,8 +306,9 @@ gulp.task('serve.prod', ['build.app.prod'], function () {
 // Utils.
 
 function transformPath(env) {
+  var v = '?v=' + getVersion();
   return function (filepath) {
-    arguments[0] = filepath.replace('/' + PATH.dest[env].all, '');
+    arguments[0] = filepath.replace('/' + PATH.dest[env].all, '') + v;
     return inject.transform.apply(inject.transform, arguments);
   };
 }
@@ -278,4 +320,32 @@ function injectableDevAssetsRef() {
   src.push(PATH.dest.dev.ng2, PATH.dest.dev.router,
            join(PATH.dest.dev.all, '**/*.css'));
   return src;
+}
+
+function getVersion(){
+  var pkg = JSON.parse(fs.readFileSync('package.json'));
+  return pkg.version;
+}
+
+function templateLocals() {
+  return {
+    VERSION: getVersion(),
+    APP_BASE: APP_BASE
+  };
+}
+
+function registerBumpTasks() {
+  semverReleases.forEach(function (release) {
+    var semverTaskName = 'semver.' + release;
+    var bumpTaskName = 'bump.' + release;
+    gulp.task(semverTaskName, function() {
+      var version = semver.inc(getVersion(), release);
+      return gulp.src('package.json')
+        .pipe(bump({ version: version }))
+        .pipe(gulp.dest('./'));
+    });
+    gulp.task(bumpTaskName, function(done) {
+        runSequence(semverTaskName, 'build.app.prod', done);
+    });
+  });
 }
