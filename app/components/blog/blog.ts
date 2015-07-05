@@ -9,10 +9,29 @@ import {Component, View, NgFor} from 'angular2/angular2';
 })
 export class Blog {
     blogs: BlogArticle[] = [];
-        constructor() {
-        var date = new Date();
-        this.blogs.push(new BlogArticle("title", "content", date , ["tags","with","fags"]));
-        this.blogs.push(new BlogArticle("title", "content", date , []));
+    
+    constructor() {
+        console.log("blog init");
+        this.getBlogs();
+    }
+    
+    getBlogs() {
+        fetch('http://oneguyandacat.com/blog.php', {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        })
+            .then(response => response.json())
+        .then(response => {
+            for (var i = 0; i < response.length; i++) {
+                this.blogs.push(new BlogArticle(response[i].title, response[i].content, new Date(Date.parse(response[i].date.date)), response[i].tags);
+            }
+        })
+        .catch((error) => {
+          alert("Error " + error.message);
+        });
     }
 }
 
@@ -28,7 +47,9 @@ export class BlogArticle {
         this.title = title;
         this.content = content;
         this.date = date;
+    console.log(this);
     }
+    
     
     
 }

@@ -3,22 +3,20 @@ import {Component, View, bootstrap, NgFor} from 'angular2/angular2';
 import {RouteConfig, RouterOutlet, RouterLink, routerInjectables} from 'angular2/router';
 
 import {Home} from './components/home/home';
-import {About} from './components/about/about';
-<<<<<<< HEAD
 import {Blog} from './components/blog/blog';
+import {Work} from './components/work/work';
+import {Me} from './components/about/about';
 import {Contact} from './components/contact/contact';
-=======
-import {NamesList} from './services/NameList';
->>>>>>> 5fefc9bb215f7f8d95d2f60ca8cab6b5eac61335
+//import {NamesList} from './services/NameList';
 
 @Component({
-  selector: 'app',
-  viewInjector: [NamesList]
+  selector: 'app'
+  //,viewInjector: [NamesList]
 })
 @RouteConfig([
     { path: '/', component: Blog, as: 'blog' },
-    { path: '/work-and-projects', component: Blog, as: 'work-and-projects' },
-    { path: '/mathijs', component: About, as: 'mathijs' },
+    { path: '/work-and-projects', component: Work, as: 'work-and-projects' },
+    { path: '/mathijs', component: Me, as: 'mathijs' },
     { path: '/contact', component: Contact, as: 'contact' }
 ])
 @View({

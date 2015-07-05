@@ -8,11 +8,10 @@ import {BlogArticle} from '../blog/blog';
   templateUrl: './components/blog/blog.html',
   directives: [NgFor]
 })
-export class Me {
+export class Work {
     blogs: BlogArticle[] = [];
     
     constructor() {
-        console.log("blog init");
         this.getBlogs();
     }
     
@@ -28,7 +27,7 @@ export class Me {
         .then(response => {
             for (var i = 0; i < response.length; i++) {
                 for (var i2 = 0; i2 < response[i].tags.length; i2++) {
-                    if (response[i].tags[i2] == "Me") {
+                    if (response[i].tags[i2] == "Work") {
                     this.blogs.push(new BlogArticle(response[i].title, response[i].content, new Date(Date.parse(response[i].date.date)), response[i].tags);
                 }
             }

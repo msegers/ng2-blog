@@ -5950,22 +5950,22 @@ declare module "angular2/angular2" {
   }
 
 }
-
-declare module "angular2/router" {
-  var Router: any;
-  var RouterOutlet: any;
-  var RouterLink: any;
-  var RouteParams: any;
-  var routerInjectables: any;
-  var RouteConfigAnnotation: any;
-  var RouteConfig: any;
-}
-
-declare module "angular2/forms" {
-   class FormBuilder{};
-   function formDirectives(){};
-    class ControlGroup{};
-    var materialDesign: any;
-    var forms: any;
-    var required: any;
-}
+//
+//declare module "angular2/router" {
+//  var Router: any;
+//  var RouterOutlet: any;
+//  var RouterLink: any;
+//  var RouteParams: any;
+//  var routerInjectables: any;
+//  var RouteConfigAnnotation: any;
+//  var RouteConfig: any;
+//}
+//
+//declare module "angular2/forms" {
+//   class FormBuilder{};
+//   function formDirectives(){};
+//    class ControlGroup{};
+//    var materialDesign: any;
+//    var forms: any;
+//    var required: any;
+//}
