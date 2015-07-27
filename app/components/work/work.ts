@@ -1,22 +1,21 @@
 import {Component, View, NgFor} from 'angular2/angular2';
-import {BlogArticle} from '../blog/blog';
 
 @Component({
-  selector: 'blog'
+  selector: 'work'
 })
 @View({
-  templateUrl: './components/blog/blog.html',
+  templateUrl: './components/work/work.html',
   directives: [NgFor]
 })
 export class Work {
-    blogs: BlogArticle[] = [];
+    work: WorkItem[] = [];
     
     constructor() {
-        this.getBlogs();
+        this.getWork();
     }
     
-    getBlogs() {
-        fetch('http://oneguyandacat.com/blog.php', {
+    getWork() {
+        fetch('http://oneguyandacat.com/api/work', {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
@@ -26,14 +25,23 @@ export class Work {
             .then(response => response.json())
         .then(response => {
             for (var i = 0; i < response.length; i++) {
-                for (var i2 = 0; i2 < response[i].tags.length; i2++) {
-                    if (response[i].tags[i2] == "Work") {
-                    this.blogs.push(new BlogArticle(response[i].title, response[i].content, new Date(Date.parse(response[i].date.date)), response[i].tags);
-                }
+                this.work.push(new WorkItem(response[i].title, response[i].content));
             }
         })
         .catch((error) => {
           alert("Error " + error.message);
         });
     }
+}
+
+export class WorkItem {
+    content: string;
+    title: string;
+    constructor(title:string, content:string) {
+        this.title = title;
+        this.content = content;
+    }
+    
+    
+    
 }

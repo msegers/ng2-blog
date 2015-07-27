@@ -98,11 +98,69 @@ nav > ul > li:hover, nav > ul > li.active, nav > ul > li.active a{
 main {
     width: calc(100% - 300px);
     margin-left:300px;
+    max-width: 1200px;
     display:inline-block;
     white-space: normal;
     vertical-align: top;
-    padding: 40px;
+    padding: 20px;
 }
+
+img {
+    max-width: 100%;
+    margin:20px 0;
+}
+h1 {
+    font-size:40px; 
+    line-height: 32px;
+    margin-right:8px;
+    margin-bottom:8px;
+}
+
+h2 {
+    color:#F5C52C;
+    margin-bottom:10px;
+}
+p {
+    margin-bottom:10px;
+}
+
+/**
+* Responsive nav
+**/
+@media only screen and (max-width: 800px)  {
+    header {
+         display:block;
+        min-height:0%;
+        width:100%;
+        white-space: normal;
+        vertical-align: top;
+        text-align: center;
+        background:rgba(0,0,0,0.1);
+        position: relative;
+    }
+    nav {
+        padding:20px;
+    }
+    .nav-footer {
+        position:absolute;
+        max-width: 60px;
+        max-height:50px;
+        top:0;
+    }
+    .nav-footer .logo {
+        position:absolute;
+        top:10px;
+        left:10px;
+        max-width: 50px;
+        max-height:50px;
+    }
+    main {
+        width: 100%;
+        margin-left:0px;
+        display:block;
+    }
+}
+
 
 /**********************************
 CLEARFIX
@@ -125,17 +183,13 @@ CLEARFIX
     *zoom: 1;
 }
 
-img {
-    max-width: 100%;
-    margin:20px 0;
-}
-
 /**********************************
 BLOG
 **********************************/
 
 .content.blog article {
-    padding-bottom:40px;
+    padding:20px;
+    padding-bottom:30px;
 }
 ul.inline {
     list-style:none;
@@ -155,12 +209,7 @@ ul.inline li {
     line-height: 16px;
     vertical-align: top;
 }
-.content.blog h1 {
-    font-size:40px; 
-    line-height: 32px;
-    margin-right:8px;
-    margin-bottom:8px;
-}
+
 .title-meta-wrap {
     display:block;
     margin-bottom: 8px;
@@ -172,3 +221,28 @@ ul.inline li {
 .meta .categories ul > li:last-child a:after {
     content: " ";
 }
+/**********************************
+WORK
+**********************************/
+
+.content.work article {
+    padding:20px;
+    padding-bottom:30px;
+    max-width: calc(100% / 3);
+}
+@media only screen and (max-width: 800px)  {
+    .content.work article {
+        padding-bottom:30px;
+        max-width: calc(100% / 2);
+    }
+}
+@media only screen and (max-width: 600px)  {
+    .content.work article {
+        padding-bottom:30px;
+        max-width: calc(100%);
+    }
+}
+
+/**********************************
+ABOUT
+**********************************/

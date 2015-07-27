@@ -23,7 +23,16 @@ import {Contact} from './components/contact/contact';
   templateUrl: './app.html?v=<%= VERSION %>',
   directives: [RouterOutlet, RouterLink]
 })
-class App {}
+class App {
+    constructor() {
+        if (fetch != "undefined") {
+            var e = document.getElementById("old-browser-content");
+            if (e && e.parentNode) {
+                e.parentNode.removeChild(e);
+            }
+        }
+    }
+}
 
 
 bootstrap(App, [routerInjectables]);

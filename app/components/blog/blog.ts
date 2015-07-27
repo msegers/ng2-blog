@@ -11,12 +11,11 @@ export class Blog {
     blogs: BlogArticle[] = [];
     
     constructor() {
-        console.log("blog init");
         this.getBlogs();
     }
     
     getBlogs() {
-        fetch('http://oneguyandacat.com/blog.php', {
+        fetch('http://oneguyandacat.com/api/blog', {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
@@ -25,8 +24,8 @@ export class Blog {
         })
             .then(response => response.json())
         .then(response => {
-            for (var i = 0; i < response.length; i++) {
-                this.blogs.push(new BlogArticle(response[i].title, response[i].content, new Date(Date.parse(response[i].date.date)), response[i].tags);
+            for (var i = 0; i < response.blogs.length; i++) {
+                this.blogs.push(new BlogArticle(response.blogs[i].title, response.blogs[i].content, new Date(Date.parse(response.blogs[i].date)), response.blogs[i].tags));
             }
         })
         .catch((error) => {
@@ -47,9 +46,6 @@ export class BlogArticle {
         this.title = title;
         this.content = content;
         this.date = date;
-    console.log(this);
     }
-    
-    
     
 }

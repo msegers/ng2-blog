@@ -1,0 +1,9 @@
+<section class="content work">
+    <article *ng-for="#item of work">
+        <div class="title-meta-wrap cf">
+            <h1>{{item.title}}</h1>
+        </div>
+        <p [inner-html]="item.content" class="cf">
+        </p>
+    </article>     
+</section>
